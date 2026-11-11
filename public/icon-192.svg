@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="Smart Block icon">
+  <defs>
+    <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="42" fill="url(#bg)"/>
+  <rect x="22" y="22" width="148" height="148" rx="28" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.55)" stroke-width="3"/>
+  <path d="M48 118L76 68l28 44 42-54 28 60H48Z" fill="rgba(255,255,255,0.9)"/>
+  <path d="M62 126h68M78 80h34M54 92h84" stroke="rgba(15,23,42,0.6)" stroke-width="6" stroke-linecap="round"/>
+</svg>
