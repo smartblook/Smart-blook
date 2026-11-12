@@ -3,34 +3,31 @@ import { useEffect, useMemo, useState } from 'react';
 const blockStyles = [
   {
     id: 'plain',
-    name: 'सादा ईंट बिछाव',
-    description: 'आँगन, रास्ते और वाहन खड़े करने की जगह के लिए साफ़-सुथरा, टिकाऊ रूप।',
+    name: 'सादा इंटरलॉकिंग',
+    description: 'आँगन, रास्ते और वाहन खड़े करने की जगह के लिए साफ़-सुथरा और टिकाऊ बिछाव।',
     className: 'pattern-plain',
-    color: 'bg-slate-100 text-slate-900',
   },
   {
     id: 'zigzag',
-    name: 'ज़िगज़ैग बिछाव',
+    name: 'ज़िग-ज़ैग डिज़ाइन',
     description: 'मज़बूत पकड़ और बेहतर टिकाऊपन के लिए आपस में जुड़ती ईंटें।',
     className: 'pattern-zigzag',
-    color: 'bg-amber-400 text-slate-950',
   },
   {
     id: 'designer',
-    name: 'कलात्मक बिछाव',
-    description: 'घर और बाहरी जगह को खास सुंदरता देने वाला आकर्षक रूप।',
+    name: 'डिज़ाइनर पेवर',
+    description: 'घर और बाहरी जगह को खास सुंदरता देने वाला आकर्षक बिछाव।',
     className: 'pattern-designer',
-    color: 'bg-emerald-400 text-slate-950',
   },
 ];
 
-// अनुमान २०० × १०० मिमी के एक ब्लॉक के क्षेत्रफल पर आधारित है।
+// अनुमान २०० × १०० मिलीमीटर के एक ईंट के क्षेत्रफल पर आधारित है।
 const BLOCK_AREA_SQFT = ((200 * 100) / 1_000_000) * 10.7639;
 const WASTE_FACTOR = 1.05;
 const WHATSAPP_NUMBER = '919812185001';
 
 function formatNumber(value, maximumFractionDigits = 0) {
-  return new Intl.NumberFormat('hi-IN', { maximumFractionDigits }).format(value);
+  return new Intl.NumberFormat('hi-IN-u-nu-deva', { maximumFractionDigits }).format(value);
 }
 
 export default function App() {
@@ -41,8 +38,10 @@ export default function App() {
   const [width, setWidth] = useState('');
   const [pricePerSqft, setPricePerSqft] = useState('');
 
-  useEffect(() => () => {
-    if (photo) URL.revokeObjectURL(photo);
+  useEffect(() => {
+    return () => {
+      if (photo) URL.revokeObjectURL(photo);
+    };
   }, [photo]);
 
   const selectedBlock = blockStyles.find((style) => style.id === selectedStyle) ?? blockStyles[0];
@@ -77,9 +76,7 @@ export default function App() {
       quantity ? `५% अतिरिक्त सहित अनुमानित ईंटें: ${formatNumber(quantity)}` : '',
       estimate
         ? `अनुमानित खर्च: ₹${formatNumber(estimate, 2)}`
-        : pricePerSqft && Number(pricePerSqft) > 0
-          ? ''
-          : 'प्रति वर्ग फुट कीमत अभी नहीं भरी गई है।',
+        : 'प्रति वर्ग फुट कीमत अभी नहीं भरी गई है।',
     ].filter(Boolean).join('\n');
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
   }
@@ -99,9 +96,9 @@ export default function App() {
       <section id="home" className="grid items-center gap-10 py-12 md:grid-cols-[1.05fr_0.95fr] md:py-20">
         <div>
           <p className="mb-4 text-sm font-bold text-emerald-300">सोचें · देखें · बनवाएँ</p>
-          <h1 className="max-w-2xl text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">अपने नए आँगन को <span className="text-emerald-300">पहले ही सजा हुआ देखें</span></h1>
-          <p className="mt-5 max-w-xl text-lg leading-8 text-slate-300">अपनी जगह के चित्र पर फ़र्श की ईंटों का बिछाव देखें, ज़रूरी मात्रा का अनुमान लगाएँ और संदेश भेजकर हमसे बात करें।</p>
-          <a href="#visualizer" className="mt-7 inline-flex rounded-xl bg-white px-6 py-3 font-bold text-slate-950 transition hover:bg-emerald-100">नमूना देखना शुरू करें <span className="ml-2" aria-hidden="true">↓</span></a>
+          <h1 className="max-w-2xl text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl">अपने नए आँगन को <span className="text-emerald-300">पहले देखकर चुनें</span></h1>
+          <p className="mt-5 max-w-xl text-lg leading-8 text-slate-300">अपनी जगह का चित्र लगाएँ, ईंटों के अलग-अलग बिछाव देखें और ज़रूरी मात्रा का अनुमान पाएँ।</p>
+          <a href="#visualizer" className="mt-7 inline-flex rounded-xl bg-white px-6 py-3 font-bold text-slate-950 transition hover:bg-emerald-100">नमूना देखना शुरू करें</a>
         </div>
         <div className="glass-panel relative overflow-hidden rounded-3xl p-4 sm:p-6">
           <div className="relative h-64 overflow-hidden rounded-2xl bg-gradient-to-br from-slate-700 to-slate-900 sm:h-80">
@@ -111,7 +108,7 @@ export default function App() {
               <span className="font-semibold text-white">बनवाने से पहले नमूना देखें</span>
             </div>
           </div>
-          <div className="mt-4 flex items-center justify-between text-sm text-slate-300"><span>देखने के लिए तीन बिछाव</span><span className="text-emerald-300" aria-label="तीन बिछाव">● ● ●</span></div>
+          <div className="mt-4 flex items-center justify-between text-sm text-slate-300"><span>देखने के लिए तीन बिछाव</span><span className="text-emerald-300">● ● ●</span></div>
         </div>
       </section>
 
@@ -119,16 +116,16 @@ export default function App() {
         <div className="mb-6">
           <p className="text-sm font-bold text-emerald-300">०१ / अपनी जगह पर नमूना</p>
           <h2 className="mt-2 text-3xl font-bold text-white">अपनी जगह का रूप देखकर चुनें</h2>
-          <p className="mt-2 text-slate-400">अपनी ज़मीन या आँगन का चित्र चुनें और अलग-अलग बिछाव देखें। आपका चित्र इसी उपकरण में रहता है।</p>
+          <p className="mt-2 text-slate-400">अपनी ज़मीन या आँगन का चित्र चुनें और अलग-अलग बिछाव देखें।</p>
         </div>
         <div className="grid gap-5 lg:grid-cols-[1.35fr_0.65fr]">
           <div className="glass-panel rounded-3xl p-4 sm:p-6">
             <div className="relative flex min-h-72 items-center justify-center overflow-hidden rounded-2xl bg-slate-800 sm:min-h-96">
-              {photo ? <img src={photo} alt="आपकी जगह पर ईंटों के बिछाव का नमूना" className="absolute inset-0 h-full w-full object-cover" /> : <div className="max-w-sm px-6 text-center"><span className="text-5xl" aria-hidden="true">▧</span><p className="mt-3 font-semibold text-white">अपनी जगह का चित्र यहाँ देखें</p><p className="mt-1 text-sm text-slate-300">चित्र चुनने के बाद ईंटों का बिछाव यहाँ दिखाई देगा।</p></div>}
+              {photo ? <img src={photo} alt="आपकी जगह पर ईंटों के बिछाव का नमूना" className="absolute inset-0 h-full w-full object-cover" /> : <p className="px-6 text-center text-slate-300">अपनी जगह का चित्र चुनें; ईंटों का नमूना यहाँ दिखाई देगा।</p>}
               <div aria-label={`${selectedBlock.name} का नमूना`} className={`paver-overlay pointer-events-none absolute inset-0 ${selectedBlock.className}`} />
               <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-slate-950/70 px-3 py-1 text-xs font-semibold text-white backdrop-blur">{selectedBlock.name}</span>
             </div>
-            <label className="mt-4 inline-flex cursor-pointer items-center justify-center rounded-xl border border-slate-600 px-4 py-3 text-sm font-semibold text-white transition hover:border-emerald-400 hover:text-emerald-300">
+            <label className="mt-4 inline-flex cursor-pointer items-center justify-center rounded-xl border border-slate-600 px-4 py-3 text-sm font-semibold text-white transition hover:border-emerald-300">
               <span aria-hidden="true" className="mr-2">＋</span>{photo ? 'दूसरा चित्र चुनें' : 'अपनी जगह का चित्र चुनें'}
               <input className="sr-only" type="file" accept="image/*" onChange={handlePhotoChange} />
             </label>
@@ -138,56 +135,56 @@ export default function App() {
             <h3 className="text-lg font-bold text-white">ईंटों का बिछाव चुनें</h3>
             <div className="mt-4 space-y-3">
               {blockStyles.map((style) => (
-                <button key={style.id} type="button" onClick={() => setSelectedStyle(style.id)} aria-pressed={selectedStyle === style.id} className={`w-full rounded-2xl border p-4 text-left transition ${selectedStyle === style.id ? 'border-emerald-400 bg-emerald-400/10' : 'border-slate-700 hover:border-slate-500'}`}>
-                  <span className="flex items-center justify-between"><span className="font-bold text-white">{style.name}</span><span className={`h-5 w-5 rounded-full ${style.color}`} aria-hidden="true" /></span>
+                <button key={style.id} type="button" onClick={() => setSelectedStyle(style.id)} aria-pressed={selectedStyle === style.id} className={`w-full rounded-2xl border p-4 text-left transition ${selectedStyle === style.id ? 'border-emerald-300 bg-emerald-300/10' : 'border-slate-700 hover:border-slate-500'}`}>
+                  <span className="flex items-center justify-between"><span className="font-bold text-white">{style.name}</span><span className={`h-5 w-5 rounded-full ${style.className}`} aria-hidden="true" /></span>
                   <span className="mt-1 block text-sm leading-5 text-slate-300">{style.description}</span>
                 </button>
               ))}
             </div>
-            <p className="mt-4 text-xs leading-5 text-slate-400">यह केवल देखने के लिए अनुमानित नमूना है। असली रंग और रूप जगह तथा लगाने के तरीके से बदल सकते हैं।</p>
+            <p className="mt-4 text-xs leading-5 text-slate-400">यह केवल देखने के लिए अनुमानित नमूना है। असली रंग और बनावट अलग हो सकते हैं।</p>
           </aside>
         </div>
       </section>
 
       <section id="catalog" className="scroll-mt-6 py-14">
-        <div className="mb-6"><p className="text-sm font-bold text-emerald-300">०२ / ईंटों के नमूने</p><h2 className="mt-2 text-3xl font-bold text-white">अपनी पसंद का बिछाव चुनें</h2><p className="mt-2 text-slate-400">हर नमूने को चुनकर ऊपर अपनी जगह पर देख सकते हैं।</p></div>
+        <div className="mb-6"><p className="text-sm font-bold text-emerald-300">०२ / ईंटों के नमूने</p><h2 className="mt-2 text-3xl font-bold text-white">अपनी पसंद का बिछाव चुनें</h2></div>
         <div className="grid gap-4 md:grid-cols-3">
           {blockStyles.map((style, index) => (
             <article key={style.id} className="glass-panel overflow-hidden rounded-3xl">
               <div className={`paver-overlay relative h-40 ${style.className}`}><span className="absolute bottom-3 left-3 rounded-full bg-slate-950/75 px-3 py-1 text-xs font-semibold text-white">नमूना {formatNumber(index + 1)}</span></div>
-              <div className="p-5"><h3 className="text-xl font-bold text-white">{style.name}</h3><p className="mt-2 min-h-12 text-sm leading-6 text-slate-300">{style.description}</p><button type="button" onClick={() => { setSelectedStyle(style.id); document.getElementById('visualizer')?.scrollIntoView({ behavior: 'smooth' }); }} aria-pressed={selectedStyle === style.id} className="mt-4 w-full rounded-xl border border-slate-600 px-4 py-3 text-sm font-bold text-white transition hover:border-emerald-400 hover:text-emerald-300">{selectedStyle === style.id ? 'चुना हुआ बिछाव' : 'यह बिछाव चुनें'}</button></div>
+              <div className="p-5"><h3 className="text-xl font-bold text-white">{style.name}</h3><p className="mt-2 min-h-12 text-sm leading-6 text-slate-300">{style.description}</p><button type="button" onClick={() => { setSelectedStyle(style.id); document.getElementById('visualizer')?.scrollIntoView({ behavior: 'smooth' }); }} className="mt-4 font-bold text-emerald-300 hover:text-emerald-200">यह बिछाव चुनें →</button></div>
             </article>
           ))}
         </div>
       </section>
 
       <section id="calculator" className="scroll-mt-6 py-10">
-        <div className="mb-6"><p className="text-sm font-bold text-emerald-300">०३ / खर्च का अनुमान</p><h2 className="mt-2 text-3xl font-bold text-white">क्षेत्रफल और ईंटों की गणना</h2><p className="mt-2 text-slate-400">लंबाई और चौड़ाई भरें, अनुमान तुरंत देखें।</p></div>
+        <div className="mb-6"><p className="text-sm font-bold text-emerald-300">०३ / खर्च का अनुमान</p><h2 className="mt-2 text-3xl font-bold text-white">क्षेत्रफल और ईंटों की गणना करें</h2><p className="mt-2 text-slate-400">लंबाई और चौड़ाई भरें; अनुमान अपने आप बदल जाएगा।</p></div>
         <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="glass-panel rounded-3xl p-5 sm:p-7">
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="text-sm font-semibold text-slate-300">लंबाई (फुट में)<input type="number" min="0" step="0.1" value={length} onChange={(event) => setLength(event.target.value)} placeholder="जैसे २०" className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-emerald-400" /></label>
-              <label className="text-sm font-semibold text-slate-300">चौड़ाई (फुट में)<input type="number" min="0" step="0.1" value={width} onChange={(event) => setWidth(event.target.value)} placeholder="जैसे १५" className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-emerald-400" /></label>
+              <label className="text-sm font-semibold text-slate-300">लंबाई (फुट में)<input type="number" min="0" step="0.1" value={length} onChange={(event) => setLength(event.target.value)} placeholder="जैसे २०" className="mt-2 w-full rounded-xl border border-slate-600 bg-slate-900 px-4 py-3 text-white outline-none focus:border-emerald-300" /></label>
+              <label className="text-sm font-semibold text-slate-300">चौड़ाई (फुट में)<input type="number" min="0" step="0.1" value={width} onChange={(event) => setWidth(event.target.value)} placeholder="जैसे १५" className="mt-2 w-full rounded-xl border border-slate-600 bg-slate-900 px-4 py-3 text-white outline-none focus:border-emerald-300" /></label>
             </div>
-            <label className="mt-4 block text-sm font-semibold text-slate-300">प्रति वर्ग फुट कीमत (₹ में, भरना ज़रूरी नहीं)<input type="number" min="0" step="1" value={pricePerSqft} onChange={(event) => setPricePerSqft(event.target.value)} placeholder="जैसे ५०" className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-emerald-400" /></label>
-            <p className="mt-4 text-xs leading-5 text-slate-400">ईंटों की संख्या २०० × १०० मिमी के सामान्य आकार और टूट-फूट के लिए ५% अतिरिक्त मात्रा के आधार पर है। यह केवल अनुमान है।</p>
+            <label className="mt-4 block text-sm font-semibold text-slate-300">प्रति वर्ग फुट कीमत (₹ में, भरना ज़रूरी नहीं)<input type="number" min="0" step="1" value={pricePerSqft} onChange={(event) => setPricePerSqft(event.target.value)} placeholder="जैसे ८०" className="mt-2 w-full rounded-xl border border-slate-600 bg-slate-900 px-4 py-3 text-white outline-none focus:border-emerald-300" /></label>
+            <p className="mt-4 text-xs leading-5 text-slate-400">ईंटों की संख्या २०० × १०० मिलीमीटर की ईंट और ५% अतिरिक्त मात्रा के अनुमान पर आधारित है। सही मात्रा ईंट के आकार और बिछाव पर निर्भर करेगी।</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="metric-card"><span className="text-sm text-slate-300">कुल क्षेत्रफल</span><strong className="mt-3 block text-3xl font-black text-white">{formatNumber(area, 2)} <span className="text-base font-semibold text-slate-300">वर्ग फुट</span></strong></div>
+            <div className="metric-card"><span className="text-sm text-slate-300">कुल क्षेत्रफल</span><strong className="mt-3 block text-3xl font-black text-white">{formatNumber(area, 2)} <span className="text-base font-semibold">वर्ग फुट</span></strong></div>
             <div className="metric-card"><span className="text-sm text-slate-300">५% अतिरिक्त सहित ज़रूरी ईंटें</span><strong className="mt-3 block text-3xl font-black text-white">{formatNumber(quantity)}</strong></div>
-            <div className="metric-card sm:col-span-2"><span className="text-sm text-slate-300">कुल अनुमानित खर्च</span><strong className="mt-3 block text-3xl font-black text-white">{estimate ? `₹${formatNumber(estimate, 2)}` : 'कीमत भरें'} </strong><span className="mt-2 block text-xs text-slate-400">खर्च प्रति वर्ग फुट की भरी गई कीमत पर आधारित है।</span></div>
+            <div className="metric-card sm:col-span-2"><span className="text-sm text-slate-300">कुल अनुमानित खर्च</span><strong className="mt-3 block text-3xl font-black text-white">{estimate ? `₹${formatNumber(estimate, 2)}` : 'कीमत भरें'}</strong></div>
           </div>
         </div>
       </section>
 
       <section className="my-12 rounded-3xl bg-emerald-300 p-6 text-slate-950 sm:p-10">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
-          <div><p className="text-sm font-bold text-emerald-950/70">अगला कदम उठाएँ</p><h2 className="mt-2 text-3xl font-black">अपने काम के लिए जानकारी पाएँ</h2><p className="mt-2 max-w-xl text-slate-800">अपनी जगह और अनुमान की जानकारी सीधे संदेश में भेजें।</p></div>
-          <a href={makeWhatsAppUrl()} target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-green-700 px-6 py-4 font-bold text-white transition hover:bg-green-800">व्हाट्सऐप पर संदेश भेजें <span className="ml-2" aria-hidden="true">↗</span></a>
+          <div><p className="text-sm font-bold text-emerald-950/70">अगला कदम उठाएँ</p><h2 className="mt-2 text-3xl font-black">अपने काम के लिए जानकारी पाएँ</h2><p className="mt-2 text-emerald-950/80">अपना नमूना और अनुमान व्हाट्सऐप पर भेजें।</p></div>
+          <a href={makeWhatsAppUrl()} target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-green-700 px-6 py-4 font-bold text-white transition hover:bg-green-800">व्हाट्सऐप पर पूछताछ भेजें ↗</a>
         </div>
       </section>
 
-      <footer className="flex flex-col justify-between gap-2 border-t border-slate-700/70 py-6 text-sm text-slate-400 sm:flex-row"><span>© {new Date().getFullYear()} स्मार्ट ब्लॉक। सभी अधिकार सुरक्षित।</span><a className="text-slate-300 hover:text-emerald-300" href={makeWhatsAppUrl()} target="_blank" rel="noreferrer">व्हाट्सऐप पर संपर्क करें</a></footer>
+      <footer className="flex flex-col justify-between gap-2 border-t border-slate-700/70 py-6 text-sm text-slate-400 sm:flex-row"><span>© {new Date().getFullYear()} स्मार्ट ब्लॉक</span><span>फ़र्श की ईंटों का नमूना और मात्रा का अनुमान</span></footer>
     </main>
   );
 }
