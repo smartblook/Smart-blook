@@ -12,32 +12,16 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
+html { scroll-behavior: smooth; }
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top, rgba(34, 197, 94, 0.12), transparent 18%),
-    linear-gradient(180deg, #020617 0%, #0f172a 100%);
+  background: radial-gradient(circle at top, rgba(34, 197, 94, 0.12), transparent 18%), linear-gradient(180deg, #020617 0%, #0f172a 100%);
 }
-
-* {
-  box-sizing: border-box;
-}
-
-button,
-input {
-  font: inherit;
-}
-
-#root {
-  min-height: 100vh;
-}
-
+* { box-sizing: border-box; }
+button, input { font: inherit; }
+#root { min-height: 100vh; }
 .glass-panel {
   background: rgba(15, 23, 42, 0.66);
   backdrop-filter: blur(16px);
@@ -45,58 +29,67 @@ input {
   box-shadow: 0 24px 80px rgba(15, 23, 42, 0.35);
 }
 
-.pattern-base {
+/* ईंटों की जोड़, किनारे और हल्की छाया चित्र को दिखने देते हुए असली बिछाव का आभास देते हैं। */
+.paver-overlay {
+  overflow: hidden;
+  isolation: isolate;
+}
+.paver-overlay::before,
+.paver-overlay::after {
+  content: '';
   position: absolute;
   inset: 0;
-  border-radius: 1.25rem;
-  overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.28);
-  box-shadow: inset 0 0 24px rgba(15, 23, 42, 0.28);
-  touch-action: none;
-  user-select: none;
+  pointer-events: none;
+}
+.paver-overlay::before {
+  opacity: 0.78;
+  mix-blend-mode: multiply;
+}
+.paver-overlay::after {
+  background: linear-gradient(145deg, rgba(255,255,255,.32), transparent 38%, rgba(15,23,42,.22));
+  box-shadow: inset 0 0 30px rgba(15,23,42,.2);
 }
 
-.pattern-plain {
-  background:
-    linear-gradient(rgba(15, 23, 42, 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 23, 42, 0.12) 1px, transparent 1px),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(226, 232, 240, 0.65));
-  background-size: 26px 26px, 26px 26px, 100% 100%;
-}
-
-.pattern-zigzag {
-  background-color: rgba(255, 255, 255, 0.2);
+/* बराबर आकार की ईंटें, बारी-बारी से खिसकी हुई कतारों में। */
+.pattern-plain::before {
+  background-color: rgba(198, 190, 169, .28);
   background-image:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.8) 25%, transparent 25%),
-    linear-gradient(225deg, rgba(255, 255, 255, 0.8) 25%, transparent 25%),
-    linear-gradient(315deg, rgba(255, 255, 255, 0.8) 25%, transparent 25%),
-    linear-gradient(45deg, rgba(255, 255, 255, 0.8) 25%, transparent 25%);
+    linear-gradient(90deg, transparent 96%, rgba(38,32,25,.75) 97%, rgba(255,255,255,.82) 100%),
+    linear-gradient(0deg, transparent 94%, rgba(38,32,25,.7) 95%, rgba(255,255,255,.82) 100%),
+    linear-gradient(90deg, transparent 96%, rgba(38,32,25,.75) 97%, rgba(255,255,255,.82) 100%),
+    linear-gradient(0deg, transparent 94%, rgba(38,32,25,.7) 95%, rgba(255,255,255,.82) 100%);
+  background-size: 64px 36px, 64px 36px, 64px 36px, 64px 36px;
+  background-position: 0 0, 0 0, 32px 18px, 32px 18px;
+}
+/* आपस में जुड़ती, कोण वाली ज़िगज़ैग ईंटें। */
+.pattern-zigzag::before {
+  background-color: rgba(197, 151, 91, .3);
+  background-image:
+    linear-gradient(45deg, transparent 46%, rgba(44,34,25,.82) 48%, rgba(255,255,255,.78) 51%, transparent 53%),
+    linear-gradient(135deg, transparent 46%, rgba(44,34,25,.82) 48%, rgba(255,255,255,.78) 51%, transparent 53%),
+    linear-gradient(45deg, transparent 46%, rgba(44,34,25,.82) 48%, rgba(255,255,255,.78) 51%, transparent 53%),
+    linear-gradient(135deg, transparent 46%, rgba(44,34,25,.82) 48%, rgba(255,255,255,.78) 51%, transparent 53%);
+  background-size: 36px 36px;
+  background-position: 0 0, 0 0, 18px 18px, 18px 18px;
+}
+/* अलग आकार की पत्थर-जैसी ईंटों का सजावटी दोहराव। */
+.pattern-designer::before {
+  background-color: rgba(169, 151, 121, .3);
+  background-image:
+    linear-gradient(90deg, transparent 96%, rgba(42,34,26,.76) 97%, rgba(255,255,255,.78) 100%),
+    linear-gradient(0deg, transparent 95%, rgba(42,34,26,.7) 96%, rgba(255,255,255,.78) 100%),
+    linear-gradient(90deg, transparent 96%, rgba(42,34,26,.76) 97%, rgba(255,255,255,.78) 100%),
+    linear-gradient(0deg, transparent 95%, rgba(42,34,26,.7) 96%, rgba(255,255,255,.78) 100%);
+  background-size: 54px 54px, 54px 54px, 108px 54px, 108px 54px;
   background-position: 0 0, 0 0, 0 0, 0 0;
-  background-size: 26px 26px;
 }
-
-.pattern-designer {
-  background:
-    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.92) 0 12%, transparent 12.5%),
-    radial-gradient(circle at 75% 25%, rgba(255, 255, 255, 0.82) 0 11%, transparent 11.5%),
-    radial-gradient(circle at 50% 70%, rgba(255, 255, 255, 0.9) 0 13%, transparent 13.5%),
-    linear-gradient(135deg, rgba(245, 158, 11, 0.7), rgba(64, 64, 64, 0.5));
-  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
-}
-
 .metric-card {
   border: 1px solid rgba(148, 163, 184, 0.18);
   background: rgba(15, 23, 42, 0.84);
   border-radius: 1.25rem;
   padding: 1rem;
 }
-
-input[type='range'] {
-  accent-color: #22c55e;
-}
-
+input[type='range'] { accent-color: #22c55e; }
 @media (max-width: 640px) {
-  .pattern-base {
-    border-radius: 1rem;
-  }
+  .paver-overlay::after { box-shadow: inset 0 0 20px rgba(15,23,42,.2); }
 }
