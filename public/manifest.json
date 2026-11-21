@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "स्मार्ट ब्लॉक",
   "short_name": "स्मार्ट ब्लॉक",
   "description": "फ़र्श की ईंटों के नमूने देखें और ज़रूरी मात्रा की गणना करें।",
@@ -6,11 +7,21 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#020617",
   "theme_color": "#0f172a",
-  "orientation": "portrait-primary",
   "icons": [
-    { "src": "/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any maskable" },
-    { "src": "/icon-512.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
   ]
 }
