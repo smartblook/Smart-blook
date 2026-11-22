@@ -1,168 +1,142 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-const styles = [
-  { id: 'plain', name: 'सादा बिछाव', description: 'आँगन और रास्तों के लिए सादा और टिकाऊ नमूना।', className: 'pattern-plain' },
-  { id: 'zigzag', name: 'ज़िगज़ैग बिछाव', description: 'मज़बूत पकड़ देने वाला जुड़ी ईंटों का नमूना।', className: 'pattern-zigzag' },
-  { id: 'designer', name: 'सजावटी बिछाव', description: 'बाहरी जगह को सुंदर रूप देने वाला नमूना।', className: 'pattern-designer' },
+const WHATSAPP_NUMBER = '919812185001';
+const IMAGE_IDS = [
+  'photo-1600607687939-ce8a6c25118c',
+  'photo-1600585154340-be6161a56a0c',
+  'photo-1600566753086-00f18fb6b3ea',
+  'photo-1600607687920-4e2a09cf159d',
+  'photo-1600566753190-17f0baa2a6c3',
+  'photo-1600607687644-c7171b42498f',
+  'photo-1600585152915-d208bec867a1',
+  'photo-1600566752355-35792bedcfea',
+  'photo-1600607687920-4e2a09cf159d',
+  'photo-1600566753190-17f0baa2a6c3',
 ];
 
-const BLOCK_AREA_SQFT = (200 * 100 / 1_000_000) * 10.7639;
-const WHATSAPP_NUMBER = '919812185001';
-const numberFormat = new Intl.NumberFormat('hi-IN-u-nu-deva', { maximumFractionDigits: 2 });
+const DESIGN_STYLES = [
+  { name: 'आधुनिक आँगन', detail: 'खुला, रोशनी से भरा और सुकूनभरा घर', label: 'आँगन' },
+  { name: 'समकालीन निवास', detail: 'साफ़ रेखाएँ और संतुलित बाहरी रूप', label: 'समकालीन' },
+  { name: 'हरा-भरा घर', detail: 'प्रकृति के करीब, आरामदायक जीवन', label: 'हरित' },
+  { name: 'शाही प्रवेश', detail: 'मेहमानों के स्वागत के लिए आकर्षक प्रवेश', label: 'प्रवेश' },
+  { name: 'सुकून का कोना', detail: 'परिवार के साथ बिताने के लिए सुंदर जगह', label: 'सुकून' },
+  { name: 'खुला बरामदा', detail: 'हवादार बैठने की जगह और सुंदर विस्तार', label: 'बरामदा' },
+  { name: 'आधुनिक मुखौटा', detail: 'सादगी में खास पहचान वाला बाहरी डिज़ाइन', label: 'मुखौटा' },
+  { name: 'परिवार का घर', detail: 'रोज़मर्रा के लिए सहज और स्वागतपूर्ण', label: 'परिवार' },
+  { name: 'सूरजमुखी निवास', detail: 'कुदरती रोशनी के साथ खुशनुमा बनावट', label: 'रोशनी' },
+  { name: 'नया अंदाज़', detail: 'पारंपरिक गर्माहट और आधुनिक सोच का मेल', label: 'नया अंदाज़' },
+];
 
-function formatNumber(value) {
-  return numberFormat.format(value);
+const OPTIONS = [
+  { size: 20, count: 20, prefix: '२० गज' },
+  { size: 30, count: 30, prefix: '३० गज' },
+  { size: 50, count: 50, prefix: '५० गज' },
+].flatMap(({ size, count, prefix }) =>
+  Array.from({ length: count }, (_, index) => {
+    const style = DESIGN_STYLES[index % DESIGN_STYLES.length];
+    return {
+      id: `${size}-${index + 1}`,
+      size,
+      number: index + 1,
+      title: `${prefix} ${style.name} ${String(index + 1).padStart(2, '0')}`,
+      detail: style.detail,
+      label: style.label,
+      image: `https://images.unsplash.com/${IMAGE_IDS[index % IMAGE_IDS.length]}?auto=format&fit=crop&w=960&q=80`,
+      tone: index % 5,
+    };
+  }),
+);
+
+function whatsappUrl(design) {
+  const liked = design ? `मुझे “${design.title}” डिज़ाइन पसंद आया।` : 'मैं प्लॉट और बिल्डिंग के डिज़ाइन देखना चाहता/चाहती हूँ।';
+  const message = `नमस्ते! ${liked}\nकृपया इस डिज़ाइन की जानकारी के लिए मुझसे संपर्क करें।`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
-function positiveNumber(value) {
-  const number = Number(value);
-  return Number.isFinite(number) && number > 0 ? number : 0;
+function WhatsAppIcon() {
+  return <svg aria-hidden="true" viewBox="0 0 24 24" className="whatsapp-icon"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.9L.2 24l6.5-1.7a11.8 11.8 0 0 0 5.4 1.3h.1c6.5 0 11.8-5.3 11.8-11.8 0-3.1-1.2-6-3.5-8.3ZM12.1 21.6c-1.7 0-3.4-.5-4.9-1.3l-.4-.2-3.9 1 1-3.8-.3-.4a9.7 9.7 0 0 1-1.5-5.1c0-5.4 4.5-9.9 10-9.9 2.6 0 5.1 1 7 2.9a9.8 9.8 0 0 1 2.9 7c0 5.4-4.5 9.8-9.9 9.8Zm5.5-7.4c-.3-.2-1.7-.9-2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1a8.1 8.1 0 0 1-2.4-1.5 9 9 0 0 1-1.7-2.1c-.2-.4 0-.5.2-.7l.5-.6.3-.5c.1-.2 0-.4 0-.6l-.9-2.1c-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.6.1-.9.4-.3.4-1.2 1.1-1.2 2.7s1.2 3.1 1.4 3.3c.2.2 2.3 3.5 5.6 4.8.8.4 1.5.6 2 .7.8.2 1.6.2 2.2.1.7-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4Z" /></svg>;
+}
+
+function DesignCard({ design, onSelect }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  return (
+    <article className={`design-card tone-${design.tone}`}>
+      <div className="design-image">
+        <div className="image-fallback" aria-hidden="true"><span>{design.label}</span></div>
+        {!imageFailed && <img src={design.image} alt={`${design.title} का घर और बाहरी डिज़ाइन`} loading="lazy" onError={() => setImageFailed(true)} />}
+        <span className="design-badge">{design.size} गज</span>
+        <span className="image-caption">डिज़ाइन {String(design.number).padStart(2, '0')}</span>
+      </div>
+      <div className="design-info">
+        <div><p className="eyebrow">प्लॉट व बिल्डिंग डिज़ाइन</p><h3>{design.title}</h3><p className="design-description">{design.detail}</p></div>
+        <a className="card-cta" href={whatsappUrl(design)} target="_blank" rel="noopener noreferrer" aria-label={`${design.title} के बारे में WhatsApp पर पूछें`} onClick={() => onSelect(design)}>
+          जानकारी पूछें <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </article>
+  );
 }
 
 export default function App() {
-  const [selectedStyle, setSelectedStyle] = useState('plain');
-  const [photo, setPhoto] = useState('');
-  const [photoError, setPhotoError] = useState('');
-  const [length, setLength] = useState('');
-  const [width, setWidth] = useState('');
-  const [pricePerSqft, setPricePerSqft] = useState('');
+  const [activeSize, setActiveSize] = useState(20);
+  const [selectedDesign, setSelectedDesign] = useState(OPTIONS[0]);
+  const [showAll, setShowAll] = useState(false);
+  const designs = useMemo(() => OPTIONS.filter((design) => design.size === activeSize), [activeSize]);
+  const visibleDesigns = showAll ? designs : designs.slice(0, 8);
 
-  useEffect(() => {
-    return () => {
-      if (photo) URL.revokeObjectURL(photo);
-    };
-  }, [photo]);
-
-  const selectedBlock = styles.find((style) => style.id === selectedStyle) ?? styles[0];
-  const lengthValue = positiveNumber(length);
-  const widthValue = positiveNumber(width);
-  const priceValue = positiveNumber(pricePerSqft);
-  const area = lengthValue * widthValue;
-  const quantity = area ? Math.ceil(area / BLOCK_AREA_SQFT * 1.05) : 0;
-  const estimate = area && priceValue ? area * priceValue : 0;
-
-  function handlePhotoChange(event) {
-    const file = event.target.files?.[0];
-    setPhotoError('');
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      setPhotoError('कृपया चित्र वाली फ़ाइल चुनें।');
-      event.target.value = '';
-      return;
-    }
-    setPhoto(URL.createObjectURL(file));
-    event.target.value = '';
-  }
-
-  function makeWhatsAppUrl() {
-    const message = [
-      'नमस्ते! मुझे फ़र्श की ईंटों के बारे में जानकारी चाहिए।',
-      `चुना हुआ बिछाव: ${selectedBlock.name}`,
-      area
-        ? `क्षेत्रफल: ${formatNumber(area)} वर्ग फुट (${formatNumber(lengthValue)} × ${formatNumber(widthValue)} फुट)`
-        : 'क्षेत्रफल: कृपया गणना में मेरी मदद करें।',
-      quantity ? `५% अतिरिक्त सहित अनुमानित ईंटें: ${formatNumber(quantity)}` : '',
-      estimate ? `अनुमानित खर्च: ₹${formatNumber(estimate)}` : 'प्रति वर्ग फुट कीमत अभी नहीं भरी गई है।',
-    ].filter(Boolean).join('\n');
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  function chooseSize(size) {
+    setActiveSize(size);
+    setShowAll(false);
+    setSelectedDesign(OPTIONS.find((design) => design.size === size));
   }
 
   return (
-    <main id="home" className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700/70 pb-5">
-        <a href="#home" className="flex items-center gap-3 text-white no-underline" aria-label="स्मार्ट ब्लॉक का मुख्य पृष्ठ">
-          <span className="grid h-11 w-11 place-items-center rounded-xl bg-emerald-400 text-xl font-black text-slate-950" aria-hidden="true">▦</span>
-          <span><span className="block text-lg font-bold">स्मार्ट ब्लॉक</span><span className="block text-xs text-slate-400">फ़र्श की ईंटों के नमूने</span></span>
-        </a>
-        <a href={makeWhatsAppUrl()} target="_blank" rel="noreferrer" className="rounded-full bg-emerald-400 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-emerald-300">
-          व्हाट्सऐप पर बात करें
-        </a>
+    <main id="home">
+      <header className="site-header shell">
+        <a className="brand" href="#home" aria-label="स्मार्ट ब्लॉक — होम"><span className="brand-mark" aria-hidden="true"><span /><span /><span /><span /></span><span className="brand-copy"><strong>स्मार्ट ब्लॉक</strong><small>आपके सपनों का घर, आपकी पसंद</small></span></a>
+        <nav className="desktop-nav" aria-label="मुख्य नेविगेशन"><a href="#designs">डिज़ाइन देखें</a><a href="#about">हमारी खासियत</a></nav>
+        <a className="button button-dark header-cta" href={whatsappUrl(selectedDesign)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon /> बात करें</a>
       </header>
 
-      <section className="grid items-center gap-10 py-12 md:grid-cols-2 md:py-20">
-        <div>
-          <p className="mb-4 text-sm font-bold text-emerald-300">सोचें · देखें · बनवाएँ</p>
-          <h1 className="max-w-2xl text-4xl font-black leading-tight text-white sm:text-5xl">अपने नए आँगन को पहले देखकर चुनें</h1>
-          <p className="mt-5 max-w-xl text-lg leading-8 text-slate-300">अपनी जगह का चित्र लगाएँ, ईंटों के अलग-अलग बिछाव देखें और ज़रूरी मात्रा का अनुमान पाएँ।</p>
-          <a href="#visualizer" className="mt-7 inline-flex rounded-xl bg-white px-6 py-3 font-bold text-slate-950 transition hover:bg-emerald-100">नमूना देखना शुरू करें</a>
+      <section className="hero shell">
+        <div className="hero-copy">
+          <span className="kicker"><span className="kicker-dot" /> आपके प्लॉट के लिए सोच-समझकर बने डिज़ाइन</span>
+          <h1>घर की कल्पना से<br /><span>हकीकत तक।</span></h1>
+          <p>अपने प्लॉट के आकार के अनुसार घर और बाहरी डिज़ाइन खोजें। जो पसंद आए, उसकी जानकारी सीधे WhatsApp पर पाएँ।</p>
+          <div className="hero-actions"><a className="button button-primary" href="#designs">डिज़ाइन देखना शुरू करें <span aria-hidden="true">↓</span></a><a className="text-link" href={whatsappUrl(selectedDesign)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon /> सीधे पूछें</a></div>
+          <div className="hero-trust"><span className="trust-icon">✳</span><span>साफ़-सुथरे विकल्प</span><i /><span>आपकी पसंद, आपकी बातचीत</span></div>
         </div>
-        <div className="glass-panel rounded-3xl p-4 sm:p-6">
-          <div className="relative h-64 overflow-hidden rounded-2xl bg-gradient-to-br from-slate-700 to-slate-900 sm:h-80">
-            <div className="pattern-plain absolute inset-0 opacity-60" />
-            <div className="absolute bottom-5 left-5 rounded-xl border border-white/15 bg-slate-950/75 px-4 py-3 backdrop-blur">
-              <span className="block text-xs text-slate-300">आपकी जगह, नया रूप</span>
-              <span className="font-semibold text-white">बनवाने से पहले नमूना देखें</span>
-            </div>
-          </div>
-          <p className="mt-4 text-sm text-slate-300">देखने के लिए तीन बिछाव उपलब्ध हैं।</p>
+        <div className="hero-art" aria-label="आधुनिक घर का प्रेरणादायक दृश्य">
+          <div className="hero-photo" role="img" aria-label="हरियाली के बीच आधुनिक घर" />
+          <div className="hero-photo-shade" />
+          <div className="floating-note"><span className="note-icon">⌂</span><span><strong>आपका अगला घर</strong><small>एक सही डिज़ाइन से शुरू</small></span><span className="note-arrow">↗</span></div>
+          <div className="hero-number"><strong>१००</strong><span>डिज़ाइन<br />विकल्प</span></div>
+          <span className="hero-orbit orbit-one" /><span className="hero-orbit orbit-two" />
         </div>
       </section>
 
-      <section id="visualizer" className="scroll-mt-6 py-8">
-        <div className="mb-6">
-          <p className="text-sm font-bold text-emerald-300">०१ / अपनी जगह पर नमूना</p>
-          <h2 className="mt-2 text-3xl font-bold text-white">अपनी जगह का रूप देखकर चुनें</h2>
-          <p className="mt-2 text-slate-400">अपनी ज़मीन या आँगन का चित्र चुनें और अलग-अलग बिछाव देखें।</p>
-        </div>
-        <div className="grid gap-5 lg:grid-cols-[1.35fr_0.65fr]">
-          <div className="glass-panel rounded-3xl p-4 sm:p-6">
-            <div className="relative flex min-h-72 items-center justify-center overflow-hidden rounded-2xl bg-slate-800 sm:min-h-96">
-              {photo ? <img src={photo} alt="आपकी जगह का चित्र" className="absolute inset-0 h-full w-full object-cover" /> : <p className="px-6 text-center text-slate-300">अपनी जगह का चित्र चुनें या नमूना बिछाव देखें।</p>}
-              <div aria-label={`${selectedBlock.name} का नमूना`} className={`paver-overlay pointer-events-none absolute inset-0 ${selectedBlock.className}`} />
-              <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-slate-950/70 px-3 py-1 text-xs font-semibold text-white backdrop-blur">{selectedBlock.name}</span>
-            </div>
-            <label className="mt-4 inline-flex cursor-pointer items-center justify-center rounded-xl border border-slate-600 px-4 py-3 text-sm font-semibold text-white transition hover:border-emerald-300">
-              {photo ? 'दूसरा चित्र चुनें' : 'अपनी जगह का चित्र चुनें'}
-              <input className="sr-only" type="file" accept="image/*" onChange={handlePhotoChange} />
-            </label>
-            {photoError && <p role="alert" className="mt-2 text-sm text-rose-300">{photoError}</p>}
-          </div>
-          <aside className="glass-panel rounded-3xl p-5 sm:p-6">
-            <h3 className="text-lg font-bold text-white">ईंटों का बिछाव चुनें</h3>
-            <div className="mt-4 space-y-3">
-              {styles.map((style) => (
-                <button key={style.id} type="button" onClick={() => setSelectedStyle(style.id)} aria-pressed={selectedStyle === style.id} className={`w-full rounded-2xl border p-4 text-left transition ${selectedStyle === style.id ? 'border-emerald-300 bg-emerald-300/10' : 'border-slate-700 hover:border-slate-500'}`}>
-                  <span className="flex items-center justify-between"><span className="font-bold text-white">{style.name}</span><span className={`h-5 w-5 rounded-full ${style.className}`} aria-hidden="true" /></span>
-                  <span className="mt-1 block text-sm leading-5 text-slate-300">{style.description}</span>
-                </button>
-              ))}
-            </div>
-            <p className="mt-4 text-xs leading-5 text-slate-400">यह केवल देखने के लिए नमूना है। असली रंग और नाप अलग हो सकते हैं।</p>
-          </aside>
-        </div>
+      <section className="intro shell" id="about">
+        <div><p className="eyebrow">आपके सपनों के घर की शुरुआत</p><h2>पहले पसंद करें।<br /><span>फिर बात करें।</span></h2></div>
+        <p>हर प्लॉट की अपनी ज़रूरत होती है। इसलिए यहाँ अलग-अलग आकार के प्लॉट के लिए तैयार डिज़ाइन विकल्प हैं—ताकि आप आराम से देख सकें, अपनी पसंद चुन सकें और आगे की जानकारी सीधे हमारी टीम से पा सकें।</p>
       </section>
 
-      <section id="calculator" className="scroll-mt-6 py-12">
-        <div className="mb-6">
-          <p className="text-sm font-bold text-emerald-300">०२ / खर्च का अनुमान</p>
-          <h2 className="mt-2 text-3xl font-bold text-white">क्षेत्रफल और ईंटों की गणना</h2>
-          <p className="mt-2 text-slate-400">लंबाई और चौड़ाई भरें; अनुमान तुरंत दिखेगा।</p>
+      <section className="catalog shell" id="designs">
+        <div className="section-heading"><div><p className="eyebrow">डिज़ाइन संग्रह</p><h2>आपके प्लॉट के लिए<br className="mobile-break" /> एक नया नज़रिया</h2></div><p>अपना प्लॉट चुनें और पसंदीदा डिज़ाइन देखें।</p></div>
+        <div className="size-tabs" role="tablist" aria-label="प्लॉट का आकार चुनें">
+          {[{ size: 20, label: '२० गज', count: '२० डिज़ाइन' }, { size: 30, label: '३० गज', count: '३० डिज़ाइन' }, { size: 50, label: '५० गज', count: '५० डिज़ाइन' }].map((tab) => <button key={tab.size} type="button" role="tab" aria-selected={activeSize === tab.size} className={`size-tab ${activeSize === tab.size ? 'active' : ''}`} onClick={() => chooseSize(tab.size)}><strong>{tab.label}</strong><span>{tab.count}</span></button>)}
         </div>
-        <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="glass-panel rounded-3xl p-5 sm:p-7">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="text-sm font-semibold text-slate-300">लंबाई (फुट में)<input type="number" min="0" step="0.1" value={length} onChange={(event) => setLength(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-600 bg-slate-950 px-4 py-3 text-white" placeholder="जैसे २०" /></label>
-              <label className="text-sm font-semibold text-slate-300">चौड़ाई (फुट में)<input type="number" min="0" step="0.1" value={width} onChange={(event) => setWidth(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-600 bg-slate-950 px-4 py-3 text-white" placeholder="जैसे १५" /></label>
-            </div>
-            <label className="mt-4 block text-sm font-semibold text-slate-300">प्रति वर्ग फुट कीमत (₹ में, भरना ज़रूरी नहीं)<input type="number" min="0" step="0.01" value={pricePerSqft} onChange={(event) => setPricePerSqft(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-600 bg-slate-950 px-4 py-3 text-white" placeholder="जैसे ५०" /></label>
-            <p className="mt-4 text-xs leading-5 text-slate-400">ईंटों की संख्या २०० × १०० मिलीमीटर की ईंट और ५% अतिरिक्त मात्रा के अनुमान पर आधारित है।</p>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="metric-card"><span className="text-sm text-slate-300">कुल क्षेत्रफल</span><strong className="mt-3 block text-3xl font-black text-white">{formatNumber(area)} वर्ग फुट</strong></div>
-            <div className="metric-card"><span className="text-sm text-slate-300">५% अतिरिक्त सहित ज़रूरी ईंटें</span><strong className="mt-3 block text-3xl font-black text-white">{formatNumber(quantity)}</strong></div>
-            <div className="metric-card sm:col-span-2"><span className="text-sm text-slate-300">कुल अनुमानित खर्च</span><strong className="mt-3 block text-3xl font-black text-white">{estimate ? `₹${formatNumber(estimate)}` : 'कीमत भरें'}</strong></div>
-          </div>
-        </div>
+        <div className="catalog-meta"><span><strong>{activeSize} गज</strong> के लिए चुनिंदा डिज़ाइन</span><span>{designs.length} विकल्प</span></div>
+        <div className="design-grid">{visibleDesigns.map((design) => <DesignCard key={design.id} design={design} onSelect={setSelectedDesign} />)}</div>
+        {designs.length > 8 && <button className="button button-outline more-button" type="button" onClick={() => setShowAll((value) => !value)}>{showAll ? 'कम डिज़ाइन दिखाएँ' : `सभी ${designs.length} डिज़ाइन देखें`} <span aria-hidden="true">{showAll ? '↑' : '↓'}</span></button>}
       </section>
 
-      <section className="my-12 rounded-3xl bg-emerald-300 p-6 text-slate-950 sm:p-10">
-        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
-          <div><p className="text-sm font-bold text-emerald-950/70">अगला कदम उठाएँ</p><h2 className="mt-2 text-3xl font-black">अपने काम के लिए जानकारी पाएँ</h2><p className="mt-2">अपनी ज़रूरत हमें व्हाट्सऐप पर भेजें।</p></div>
-          <a href={makeWhatsAppUrl()} target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center justify-center rounded-xl bg-green-700 px-6 py-4 font-bold text-white transition hover:bg-green-800">व्हाट्सऐप पर संदेश भेजें</a>
-        </div>
+      <section className="contact-band shell">
+        <div className="contact-content"><span className="contact-icon"><WhatsAppIcon /></span><div><p className="eyebrow">आपकी पसंद का अगला कदम</p><h2>कोई डिज़ाइन पसंद आया?</h2><p>हमें WhatsApp पर बताइए—हम आपकी पसंद के डिज़ाइन की जानकारी देने के लिए संपर्क करेंगे।</p></div></div>
+        <a className="button button-light" href={whatsappUrl(selectedDesign)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon /> WhatsApp पर जानकारी लें <span aria-hidden="true">↗</span></a>
       </section>
 
-      <footer className="flex flex-col justify-between gap-2 border-t border-slate-700/70 py-6 text-sm text-slate-400 sm:flex-row"><span>© {new Date().getFullYear()} स्मार्ट ब्लॉक</span><span>फ़र्श की ईंटों के नमूने और अनुमान</span></footer>
+      <footer className="site-footer shell"><a className="brand footer-brand" href="#home"><span className="brand-mark" aria-hidden="true"><span /><span /><span /><span /></span><span className="brand-copy"><strong>स्मार्ट ब्लॉक</strong><small>घर, आपकी पसंद</small></span></a><span>आपके घर के सपनों के लिए, एक बेहतर शुरुआत।</span><span>© {new Date().getFullYear()} स्मार्ट ब्लॉक</span></footer>
+      <a className="mobile-whatsapp" href={whatsappUrl(selectedDesign)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp पर जानकारी लें"><WhatsAppIcon /></a>
     </main>
   );
 }

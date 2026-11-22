@@ -1,15 +1,15 @@
 {
   "id": "/",
-  "name": "स्मार्ट ब्लॉक",
+  "name": "स्मार्ट ब्लॉक — घर के डिज़ाइन",
   "short_name": "स्मार्ट ब्लॉक",
-  "description": "फ़र्श की ईंटों के नमूने देखें और ज़रूरी मात्रा की गणना करें।",
+  "description": "२०, ३० और ५० गज के प्लॉट के लिए घर के डिज़ाइन देखें और WhatsApp पर जानकारी पाएँ।",
   "lang": "hi",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#020617",
-  "theme_color": "#0f172a",
+  "background_color": "#f7f7f2",
+  "theme_color": "#536b4c",
   "icons": [
     {
       "src": "/icon-192.svg",
